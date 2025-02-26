@@ -1,0 +1,112 @@
+```{r}
+## Importing Data
+# Install necessary package
+install.packages("readr")
+
+# Load necessary library
+library(readr)
+
+# Read the CSV files
+train_data <- read_csv("Train_Dataset.csv")
+test_data <- read_csv("Test_Dataset.csv")
+
+# Ensure both datasets have the same columns
+common_columns <- intersect(names(train_data), names(test_data))
+train_data <- train_data[common_columns]
+test_data <- test_data[common_columns]
+
+# Concatenate the datasets
+combined_data <- rbind(train_data, test_data)
+
+# Display the first few rows
+head(combined_data)
+```
+
+```{r}
+```
+
+```{r}
+## Exploration
+# Display the first few rows
+head(combined_data)
+
+# Display dataset dimensions
+cat("Number of rows in train_data:", nrow(train_data), "\n")
+cat("Number of columns in train_data:", ncol(train_data), "\n")
+cat("Number of rows in test_data:", nrow(test_data), "\n")
+cat("Number of columns in test_data:", ncol(test_data), "\n")
+cat("Total number of rows in combined_data:", nrow(combined_data), "\n")
+cat("Total number of columns in combined_data:", ncol(combined_data), "\n")
+
+# Count number of rows containing NA values
+num_na_rows <- sum(apply(combined_data, 1, function(row) any(is.na(row))))
+cat("Number of rows containing NA values:", num_na_rows, "\n")
+
+```
+
+```{r}
+# Install necessary package
+install.packages("readr")
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("DT")
+
+# Load necessary libraries
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(DT)
+
+## Importing Data
+# Read the CSV files
+train_data <- read_csv("Train_Dataset.csv")
+test_data <- read_csv("Test_Dataset.csv")
+
+# Ensure both datasets have the same columns
+common_columns <- intersect(names(train_data), names(test_data))
+train_data <- train_data[common_columns]
+test_data <- test_data[common_columns]
+
+# Concatenate the datasets
+combined_data <- rbind(train_data, test_data)
+
+## Exploration
+# Display the first few rows
+head(combined_data)
+
+# Display dataset dimensions
+cat("Number of rows in train_data:", nrow(train_data), "\n")
+cat("Number of columns in train_data:", ncol(train_data), "\n")
+cat("Number of rows in test_data:", nrow(test_data), "\n")
+cat("Number of columns in test_data:", ncol(test_data), "\n")
+cat("Total number of rows in combined_data:", nrow(combined_data), "\n")
+cat("Total number of columns in combined_data:", ncol(combined_data), "\n")
+
+# Count number of rows containing NA values
+num_na_rows <- sum(apply(combined_data, 1, function(row) any(is.na(row))))
+cat("Number of rows containing NA values:", num_na_rows, "\n")
+
+## Visualization
+# Plot missing values distribution
+missing_values <- colSums(is.na(combined_data))
+missing_df <- data.frame(Column = names(missing_values), MissingCount = missing_values)
+missing_df <- missing_df %>% filter(MissingCount > 0)
+
+ggplot(missing_df, aes(x = reorder(Column, -MissingCount), y = MissingCount)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  coord_flip() +
+  labs(title = "Missing Values per Column", x = "Columns", y = "Count of Missing Values")
+
+# Histogram for numeric columns
+numeric_columns <- combined_data %>% select(where(is.numeric))
+melted_data <- reshape2::melt(numeric_columns)
+
+ggplot(melted_data, aes(x = value)) +
+  geom_histogram(bins = 30, fill = "steelblue", alpha = 0.7) +
+  facet_wrap(~variable, scales = "free") +
+  labs(title = "Distribution of Numeric Features", x = "Value", y = "Count")
+
+## Open dataset in a scrollable window
+datatable(combined_data, options = list(scrollX = TRUE, pageLength = 20))
+
+```
